@@ -1,0 +1,169 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap css -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link href="{% static 'css/global.css' %}" type="text/css" rel="stylesheet">
+
+    <title>Hello, world!</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+
+  </head>
+  <body>
+    <div class="fluid-container">
+      <div class="text-center m-1 bg-light shadow p-2">
+        <h2>Olympic Data Analysis</h2>
+        <h3>1896-2016</h3>
+      </div>
+      <div class="row">
+        <div class="col-3 bg-white">
+          <div class="m-3 position-fixed shadow p-3 bg-white rounded">
+            <h4> Olympic Medal Tally</h4>
+            <div>
+              <form action="" method="POST">
+                {% csrf_token %}
+                {{fm.as_p}}
+                <input value="submit" type="Submit">
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-9 bg-white">
+          <div class="row m-3 text-center shadow p-3 bg-white rounded">
+              <h3>Olympic Tally</h3>
+              <div class="row">
+                <div class="col-sm-4">
+                  <h4 class="bg-light">Total Events </h4>
+                  <h4>{% for i in event %}{{i}}{% endfor %}</h4>
+                </div>
+                <div class="col-sm-4">
+                  <h4 class="bg-light">Total Sport </h4>
+                  <h4>{% for i in sport %}{{i}}{% endfor %}</h4>
+                </div>
+                <div class="col-sm-4">
+                  <h4 class="bg-light">Total Countries </h4>
+                  <h4>{% for i in Country %}{{i}}{% endfor %}</h4>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-sm-6">
+                  <h4 class="bg-light">Total Edition </h4>
+                  <h4>{% for i in Edition %}{{i}}{% endfor %}</h4>
+                </div>
+                <div class="col-sm-6">
+                  <h4 class="bg-light">Total Athletes </h4>
+                  <h4>{% for i in Athlete %}{{i}}{% endfor %}</h4>
+                </div>
+              </div>
+          </div>
+          <div class="chart-container m-5">
+            <ul><li><h5 class="ml-2">Participating Nations Over the Year</h5></li></ul>
+            <canvas id="participation"></canvas>
+            <ul><li><h5 class="ml-2 mt-5">Number of Events Over the Year</h5></li></ul>
+            <canvas id="event"></canvas>
+            <ul><li><h5 class="ml-2 mt-5">Number of Events Over the Year</h5></li></ul>
+            <img src="data:image/png;base64,{{graph}}" class="img-fluid">
+
+            <ul><li><h5 class="ml-2 mt-5 mb-2">Most Successful Athlete in a particular Sport</h5></li></ul>
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                  <tr>
+                  {% for col in table.columns %}
+                    <th>
+                      {{col}}
+                    </th>
+                  {% endfor %}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for index, row in table.iterrows %}
+                  <tr>
+                    {% for cell in row %}
+                    <td>
+                      {{cell}}
+                    </td>
+                    {% endfor %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <script>
+               function start(){
+
+                         var ctx = document.getElementById('participation').getContext('2d');
+                         var participation = new Chart(ctx,
+                                          {type: 'line',
+                                          data: {labels: [{% for i in C %}{{i}},{% endfor %}],
+                                                 datasets: [{label: 'Participating Nations Over the Year',
+                                                           data: [{% for i in D %}{{i}},{% endfor %}],
+                                                           backgroundColor: [
+                                                                              'rgba(255, 99, 132, 0.5)',
+                                                                              'rgba(54, 162, 235, 0.5)',
+                                                                              'rgba(255, 206, 86, 0.5)',
+                                                                              'rgba(75, 192, 192, 0.5)',
+                                                                              'rgba(153, 102, 255, 0.5)',
+                                                                              'rgba(255, 159, 64, 0.5)'],
+                                                           borderColor: [
+                                                                               'rgba(255, 99, 132, 1)',
+                                                                               'rgba(54, 162, 235, 1)',
+                                                                               'rgba(255, 206, 86, 1)',
+                                                                               'rgba(75, 192, 192, 1)',
+                                                                               'rgba(153, 102, 255, 1)',
+                                                                               'rgba(255, 159, 64, 1)'],
+                                                           borderWidth: 1
+                                                           }]
+                                                 },
+                                         options: {scales: {y: {beginAtZero: false}},
+                                                    responsive:true }
+                                         });
+
+
+
+
+
+                         var ct = document.getElementById('event').getContext('2d');
+                         var event = new Chart(ct,
+                                          {type: 'line',
+                                          data: {labels: [{% for i in e %}{{i}},{% endfor %}],
+                                                 datasets: [{label: 'Number of Events Over the Year',
+                                                           data: [{% for i in f %}{{i}},{% endfor %}],
+                                                           backgroundColor: [
+                                                                              'rgba(255, 99, 132, 0.5)',
+                                                                              'rgba(54, 162, 235, 0.5)',
+                                                                              'rgba(255, 206, 86, 0.5)',
+                                                                              'rgba(75, 192, 192, 0.5)',
+                                                                              'rgba(153, 102, 255, 0.5)',
+                                                                              'rgba(255, 159, 64, 0.5)'],
+                                                           borderColor: [
+                                                                               'rgba(255, 99, 132, 1)',
+                                                                               'rgba(54, 162, 235, 1)',
+                                                                               'rgba(255, 206, 86, 1)',
+                                                                               'rgba(75, 192, 192, 1)',
+                                                                               'rgba(153, 102, 255, 1)',
+                                                                               'rgba(255, 159, 64, 1)'],
+                                                           borderWidth: 1
+                                                           }]
+                                                 },
+                                         options: {scales: {y: {beginAtZero: false}}}
+                                         });
+
+                         }
+               window.onload= start;
+          </script>
+
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>   </div>
+  </body>
+</html>
